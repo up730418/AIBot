@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Robs Bot</title>
+  </head>
+
+  <h1>ROB BOT</h1> 
+  <h4> All the knoledge of Rob but more fun to speak to!</h4>
+  <!-- <input type="text" id="userName" placeholder="Enter User Name"  maxlength="25" requiered tabindex="1"> -->
+
+  <div id="testMessage"> </div>
+
+  <input type="text" id="userInput" placeholder="Type question, follwed by return" tabindex="2">
+
+</html>
+<script>
+window.addEventListener("load", function(){
+  
+  getChatData("&welcome")
+  
+  userInput.addEventListener("change", function(){
+      addMessage({data: userInput.value, user: "Me"})
+      getChatData(userInput.value);
+      userInput.value = ""
+    });    
+});
+
+let colours = ["07008c"];
+let userColour = {}
+const userName = "Me"
+let lastQuestion = "na"
+let lastAnswer = "na"
+
+function addMessage(data) {
+  
+  //let messageData = message;
+
+  let cssClass = "otherMessage";
+  let colour = "";
+  let commentor = data['user'];
+
+  if(userName == data.user){
+      cssClass = "myMessage";
+  }else{
+    if(userColour[commentor]){
+        colour = userColour[commentor];
+
+    }
+    else{
+        colour = colours[Math.floor(Math.random()*colours.length)]
+        userColour[commentor] = colour;
+    }
+  }
+
+  if(data.user && data.user.length > 25){
+    data.user = data.user.substring(0, 25) + "..."
+  }
+
+  let className = !data['user'] ? "anon" : data['user'];
+  className = className.replace(/\s/g, '');
+
+  if(data.data && typeof data.data == "string" && data.data.includes(".gif")){
+    //Add a gif to the chat
+    let newDiv = document.createElement("div")
+    let divText = document.createTextNode(`${data['user']} : \n`)
+    let newImg = document.createElement("img")
+    newImg.setAttribute('src', data['data'].split("Was")[0]);
+    newImg.setAttribute('alt', data['user']);
+    newDiv.appendChild(divText);
+    newDiv.appendChild(newImg);
+    newDiv.style.backgroundColor = colour;
+    newDiv.classList.add(cssClass, "message", className)
+
+    document.getElementById("testMessage").appendChild(newDiv)
+
+  }
+  else{
+    //Add a normal text element to the chat
+    let newDiv = document.createElement("div")
+    //let divText = document.createTextNode(`${data['user']} : \n\n  ${data['data']}`)
+    let divText = document.createTextNode(`${data['data']}`)
+    newDiv.appendChild(divText);
+    newDiv.style.backgroundColor = colour;
+    newDiv.classList.add(cssClass, "message", className)
+
+    document.getElementById("testMessage").appendChild(newDiv)
+
+  }
+
+  
+  testMessage.scrollTop = testMessage.scrollHeight;
+}
+
+function sendMessage() {
+  if(test.value.trim() != ""){
+    addMessage()
+  }
+}
+
+
+function getChatData(question){
+  fetch(`askQuestion/${question}/${lastQuestion}/${lastAnswer}`, { method: 'GET', 'content-type': 'application/json'})
+    .then((res) => res.json())
+    .then((data) => {
+        lastQuestion = data.lastQuestion
+        lastAnswer = data.lastAnswer
+        addMessage(data);
+        
+  })
+}
+
+</script>
+<style>
+
+html {
+  font-family: "Courier New";
+}
+
+h1, h4{
+  text-align: center;
+}
+
+#testMessage{
+  height: auto;
+  max-height: 70vh;
+  width: 100%;
+  overflow: auto;
+  display: block;
+  margin: auto;
+}
+
+.full-width {
+  width: 90%;
+}
+
+.myMessage{
+    background-color: #420177;
+/*    text-align: right;*/
+    margin-left: auto;
+    margin-right: 0;
+    word-break: break-word;
+    white-space: pre-line;
+}
+
+.otherMessage{
+    background-color: #013677;
+    text-align: left;
+    margin-left: 0;
+    margin-right: auto;
+    word-break: break-word;
+    white-space: pre-line;
+    
+}
+.message{
+  color: white;
+  width: max-content;
+  /*font-weight: bold;*/
+  padding: 0.5em;
+  padding-right: 0.4em;
+/*  text-indent: 0.5vw;*/
+  max-width: 60vw;
+  margin-bottom: 0.4em; 
+  border-radius: 4px;
+}
+
+.message > p {
+  margin-top: 0.4em;
+  margin-left: 0.2em;
+  margin-bottom: 0.2em;
+  
+}
+input[type=text]{
+    width: 50vw;
+    height: 2em;
+}
+
+.message > img{
+width: auto;
+height: auto;
+max-width: 60vw;
+max-height: 50vh;
+overflow: none;
+
+}
+
+/*
+@media screen and (max-width: 48em){
+  input[type=text]{
+      width: 100%;
+      font-size: 3em;
+  }
+  .message{
+    line-height: 1em;
+    font-size: 1em;
+  }
+}
+*/
+
+</style>
