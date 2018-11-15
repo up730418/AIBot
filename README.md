@@ -21,3 +21,12 @@ Alternetivly to this you can load data directly into the database in bfollowing 
 - Load answers in to the answers collection in following format: `[{ "answer": "No one likes Cheese", "id": 1}]`
 
 Done you should now have a fully functunal Bot!! Happy Questioning!
+
+## To Do
+- Restructure database. The current implementation works but could be vastly improved
+- Make it smarter. Currently only one `no` reply is needed to make the bot not serve an answer for a question. This could lead to the bot being abused fairly easily.
+- Add a web interface for adding questions and answers
+- Improve the bots UI
+- Split up the `getResponse` function into smaller functions for easier maintainability
+- Create functions that will allow the bot to check the database for updates periodically/onchange so multiple instances can be created.
+- 
