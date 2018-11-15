@@ -29,4 +29,3 @@ Done you should now have a fully functunal Bot!! Happy Questioning!
 - Improve the bots UI
 - Split up the `getResponse` function into smaller functions for easier maintainability
 - Create functions that will allow the bot to check the database for updates periodically/onchange so multiple instances can be created.
-- 
