@@ -1,0 +1,25 @@
+version: "3.6"
+
+services:
+  db:
+    container_name: bot-database
+    image: mongo:4.0.27
+    hostname: mongo
+    ports:
+      - "27017:27017" 
+    # volumes:
+    #   - /data/db:/data/db
+    
+  web:
+    container_name: bot-server
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    links:
+      - db
+    environment:
+      - WAIT_HOSTS=db:27017
+      - WAIT_AFTER=0
+      

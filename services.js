@@ -10,15 +10,13 @@ let noResult = []
 
 
 module.exports.setupInstance = async(db) => {
-	//Check we have the correct collections in out datadase
-	const collectionsToCheck = ["faq", "answers", "incorrectAnswer", "noAnswer"]
-	let collectionsCorect = await botMongoDB.checkBotCollections(db, collectionsToCheck)
 	//load all data the bot wants into memory
 	faq = await botMongoDB.getAllFaq(db)
 	answers = await botMongoDB.getAllAnswers(db)
 	incorrectAnswers = await botMongoDB.getAllIncorrectAnswers(db)
-	//Creat a new question answer combo example
-	//module.exports.createNewQuestionAnswer("How hot is Da Bomb", "Scoville Heat Units (SHU): 50,000 - 250,000")
+	//Run on initial setup only
+	// module.exports.loadInitialData(db);
+
 }
 
 module.exports.saveIncorrectAnswer = async(db, question, answerId) => {
@@ -92,10 +90,10 @@ module.exports.getResponse = (db, question, lastQuestion, lastAnswer) => {
 		//Setup our closest match placeholder
 		closest = {"score":0, "question": "", "answer": null, "input": null}
 		
-		//Remove rubish from the end of our input
+		//Remove rubbish from the end of our input
 		question = question.toString().trim()
 		
-		//Add the inputed string to our object
+		//Add the inputted string to our object
 		closest.input = question.toString()
 
 		//Check similarity
@@ -141,5 +139,24 @@ module.exports.getResponse = (db, question, lastQuestion, lastAnswer) => {
 		}
 
 	}
+
+}
+
+module.exports.loadInitialData = async(db) => {
+	const data = [
+		{question: "How hot is Da Bomb", answer: "Scoville Heat Units (SHU): 50,000 - 250,000"},
+		{question: "How warm is it today", answer: "Let me check the forecast ............ COLD"},
+		{question: "what should I have for dinner", answer: "Pizza. Pizza is always good!"},
+		{question: "what time is it", answer: "https://media4.giphy.com/media/9qvcYBFaXyhw8qA364/giphy.gif"},
+	]
+	let time = 0
+	data.forEach((qa) => {	
+		
+		setTimeout(() => {
+			module.exports.createNewQuestionAnswer(db, qa.question, qa.answer)
+		}, time)
+		time +=50
+	})
+		
 
 }

@@ -6,12 +6,12 @@ const MongoClient = require('mongodb').MongoClient
 const botServices = require('./services')
 
 // Connection url
-const url = 'mongodb://127.0.0.1:27017';
+const url = 'mongodb://bot-database:27017'
 // Database Name
-const dbName = 'Bot';
+const dbName = 'Bot'
 // create Client
 const client = new MongoClient(url)
-//Setub Databse variable
+//Setup Database variable
 let db
 
 //Setup default for closest
@@ -33,25 +33,40 @@ app.get('/askQuestion/:question/:lastQuestion/:lastAnswer', async (req, res) => 
 //Use the html files from static folder
 app.use(express.static(path.join(__dirname,'static')))
 
-async function startServer() {
-	//Start the express server
-	client.connect(async () => { 
-  		try {
-	    	db = client.db(dbName);
-			botServices.setupInstance(db).then(() => {
+function startServer() {
+	createMongoClient()
+}
 
-				app.listen(port, (err) => {
-				  if (err) {
-				    console.error('error', err)
-				   } else {
-				    console.log(`app listening on port ${port}`)
-				   }
-				})	
-			})	
-	 	 } catch (err) {
-	    	console.error(err.stack);
-	  	}
+function createMongoClient() {
+	//Start the express server
+	client.connect((err, client1) => { 
+		startAppServer(err, client1)
 	})
+}
+
+function startAppServer(error, client1) {
+
+	if(error) {
+		console.error(err.stack);
+		return;
+	}
+	try {
+
+		db = client1.db(dbName);
+		// console.log(db.collection('faq'))
+		botServices.setupInstance(db).then(() => {
+			// start the express server
+			app.listen(port, (err) => {
+			  if (err) {
+				console.error('error', err)
+			   } else {
+				console.log(`app listening on port ${port}`)
+			   }
+			})	
+		})	
+	  } catch (err) {
+		console.error(err.stack)
+	  }
 }
 
 startServer()

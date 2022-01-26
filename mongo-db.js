@@ -60,16 +60,30 @@ module.exports.createNoAnswer = async (db, answer) => {
 }
 
 module.exports.checkBotCollections = async (db, collectionsToCheck) => {
-  collectionsToCheck.forEach((collection) => {
-      db.createCollection(collection)
+  collectionsToCheck.forEach(async (collection) => {
+      const existingCollection = await db.collection(collection);
+      console.log(existingCollection)
+      if(!existingCollection) {
+        db.createCollection(collection)
+      }
+
   })
 }
 
 module.exports.createNewQA = async (db, question, answer) => {            
+  // console.log('here', db)
   const collection = await db.collection('answers');
-  //Find the higest id currently stored
+  //Find the highest id currently stored
   const newestAnswer = await collection.find({}).sort({id:-1}).limit(1).toArray()
-  const nextId = newestAnswer[0].id? newestAnswer[0].id + 1 : 0
+  
+  //console.log("newestAnswer", newestAnswer, !!newestAnswer.length)
+  let nextId = 0;
+  try {
+    
+    nextId = !!newestAnswer.length && (newestAnswer[0].id || newestAnswer[0].id === 0)? newestAnswer[0].id + 1 : 0
+  } catch(e) {
+    console.error(e);
+  }
   //Creat new stuff!
   const newAnswer = await module.exports.createAnswer(db, answer, nextId)
   const newQuestion = await module.exports.createFaq(db, question, nextId)
